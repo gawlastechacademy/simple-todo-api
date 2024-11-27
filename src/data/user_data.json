@@ -1,0 +1,38 @@
+{
+      "0": {
+            "id": "0",
+            "user": "Aga",
+            "password": "123test",
+            "admin": "False"
+      },
+      "1": {
+            "id": "1",
+            "user": "Sonia",
+            "password": "123test",
+            "admin": "False"
+      },
+      "2": {
+            "id": "2",
+            "user": "Pawel",
+            "password": "123test",
+            "admin": "False"
+      },
+      "3": {
+            "id": "3",
+            "user": "Jaga",
+            "password": "test123",
+            "admin": "False"
+      },
+      "4": {
+            "id": "4",
+            "user": "Pawelek",
+            "password": "123test",
+            "admin": "False"
+      },
+      "5": {
+            "id": "5",
+            "user": "Agata",
+            "password": "123test",
+            "admin": "False"
+      }
+}
