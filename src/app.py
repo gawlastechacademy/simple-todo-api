@@ -1,8 +1,14 @@
+import os
 from flask import Flask, request, jsonify, session
 import json_connection as data_connection
+from dotenv import load_dotenv
+# load .env file to environment
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = "jmjs7"
+app.secret_key = os.getenv('SECRET_KEY')
+print(os.getenv('SECRET_KEY'))
+
 
 @app.route("/")
 def hello_world():

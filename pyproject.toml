@@ -4,4 +4,4 @@ description = "A simple task application, written in Flask, using Python and a j
 version = "0.0.1"
 readme = "README.md"
 dependencies = [
-    "Flask >= 3.1.0", "Pytest >= 8.3.3", ]
+    "Flask >= 3.1.0", "dotenv >= 1.0.1" ]
