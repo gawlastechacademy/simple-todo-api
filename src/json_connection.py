@@ -153,18 +153,21 @@ def add_task(user_id, title, description, status, do_time):
                     with open(json_file, "w") as file:
                         file.seek(0)
                         json.dump(json_data, file, indent=6)
-                        return {"response": "New task was added"}
+                        return True
                 else:
-                    return {"response": "You can't add task because user ID doesn't exist"}
+                    return False
     else:
         print(f"Status '{status}' doesn't exist")
-        return f"Status '{status}' doesn't exist"
+        return False
 
 def see_all_task_all_users():
     json_file = check_and_create_data_file_tasks()
     with open(json_file, "r+") as file:
         json_data = json.load(file)
-        return json_data
+        if bool(json_data):
+            return json_data
+        else:
+            return None
 
 
 def see_all_task_one_user(user_id):
@@ -179,7 +182,7 @@ def see_all_task_one_user(user_id):
             return selected_file
         else:
             print(f"User id {user_id} doesn't exist")
-            return f"User id {user_id} doesn't exist"
+            return None
 
 
 def see_one_task(task_id):
@@ -193,7 +196,7 @@ def see_one_task(task_id):
         if bool(selected_file):
             return selected_file
         print(f"Task {task_id} doesn't exist")
-        return f"Task {task_id} doesn't exist"
+        return None
 
 def change_task(task_id, change_attribute, change_content):
     data_file = check_and_create_data_file_tasks()
@@ -207,7 +210,7 @@ def change_task(task_id, change_attribute, change_content):
                     json.dump(json_data, file, indent=6)
 
                     print(f"Change '{change_attribute}' to '{change_content}' in '{task_id}' task.")
-                    return f"Change '{change_attribute}' to '{change_content}' in '{task_id}' task."
+                    return True
 
             if change_attribute == "description":
                 json_data[task_id]["task_description"] = change_content
@@ -217,7 +220,7 @@ def change_task(task_id, change_attribute, change_content):
                     json.dump(json_data, file, indent=6)
 
                     print(f"Change '{change_attribute}' to '{change_content}' in '{task_id}' task.")
-                    return f"Change '{change_attribute}' to '{change_content}' in '{task_id}' task."
+                    return True
 
             if change_attribute == "status":
                 if change_content.lower() == "to do" or change_content.lower() == "in progress" or change_content.lower() == "done":
@@ -228,7 +231,7 @@ def change_task(task_id, change_attribute, change_content):
                         json.dump(json_data, file, indent=6)
 
                         print(f"Change '{change_attribute}' to '{change_content}' in '{task_id}' task.")
-                        return f"Change '{change_attribute}' to '{change_content}' in '{task_id}' task."
+                        return True
                 else:
                     print(f"Status '{change_content}' doesn't exist")
                     return f"Status '{change_content}' doesn't exist"
@@ -244,10 +247,10 @@ def change_task(task_id, change_attribute, change_content):
                     return f"Change '{change_attribute}' to '{change_content}' in '{task_id}' task."
             else:
                 print(f"This '{change_attribute}' doesn't exist.")
-                return f"This '{change_attribute}' doesn't exist."
+                return False
         else:
             print(f"Task '{task_id}' doesn't exist.")
-            return f"Task '{task_id}' doesn't exist."
+            return False
 
 
 def delete_task(task_id):
@@ -258,9 +261,9 @@ def delete_task(task_id):
             json_data.pop(task_id)
             with open(json_file, "w") as file:
                 json.dump(json_data, file, indent=6)
-                return {"response": f"{task_id} was deleted"}
-        return {"response": f"{task_id} doesn't exist"}
+                return True
+        return False
 
 
 if __name__ == '__main__':
-    change_task("3", "status", "todo")
+    pass

@@ -34,5 +34,17 @@
             "user": "Agata",
             "password": "123test",
             "admin": "False"
+      },
+      "6": {
+            "id": "6",
+            "user": "Agatamakota",
+            "password": "123test",
+            "admin": "False"
+      },
+      "7": {
+            "id": "7",
+            "user": "cerata",
+            "password": "123test",
+            "admin": "False"
       }
 }
