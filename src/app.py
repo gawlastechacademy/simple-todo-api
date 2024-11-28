@@ -1,6 +1,6 @@
 import os
 from flask import Flask, request, jsonify, make_response
-import json_connection as data_connection
+import sqllite_connection as data_connection
 from dotenv import load_dotenv
 
 # load .env file to environment
