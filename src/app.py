@@ -3,6 +3,8 @@ from flask import Flask, request, jsonify, make_response
 import sqllite_connection as data_connection
 from dotenv import load_dotenv
 
+import src.services.todo_service as todo_service
+
 # load .env file to environment
 load_dotenv()
 
@@ -34,59 +36,56 @@ def login():
     else:
         return make_response(jsonify({"description": "Wrong username or password"}), 400)
 
-#return all task from all users
-@app.route("/todos/", methods=["GET", "POST"])
-def todos():
-    if request.method == "GET":
-        if data_connection.see_all_task_all_users() is not None:
-            return make_response(jsonify({"description": data_connection.see_all_task_all_users()}), 200)
-        else:
-            return make_response(jsonify({"description": "Tasks not found"}), 404)
-    if request.method == "POST":
-        post_data = request.json
-        title = post_data["title"]
-        description = post_data["description"]
-        status = post_data["status"]
-        do_time = post_data["do_time"]
-        user_id = post_data["user_id"]
 
-        if data_connection.add_task(user_id, title, description, status, do_time):
-            return make_response(jsonify({"description": f"Task '{title}' added successfully"}), 201)
-        else:
-            return make_response(jsonify({"description": "Wrong request"}), 400)
+@app.route("/todos/", methods=["GET"])
+def list_todos():
+    return todo_service.get_all_todo()
 
-#return one task
-@app.route("/todos/<task_id>", methods=["GET", "DELETE", "PUT"])
-def todos_task(task_id):
-    if request.method == "GET":
-        if data_connection.see_one_task(task_id) is not None:
-            return make_response(jsonify({"description": data_connection.see_one_task(task_id)}), 200)
-        else:
-            return make_response(jsonify({"description": f"Task '{task_id}' not found"}), 404)
-    if request.method == "DELETE":
-        if data_connection.delete_task(task_id):
-            return make_response(jsonify({"description": f"Task '{task_id}' deleted successfully"}), 200)
-        else:
-            return make_response(jsonify({"description": f"Task '{task_id}' not found"}), 404)
 
-    if request.method == "PUT":
-        post_data = request.json
-        change_attribute = post_data["attribute"]
-        change_content = post_data["content"]
-        if data_connection.change_task(task_id, change_attribute, change_content):
-            return make_response(jsonify({"description": f"Task '{task_id}' updated successfully"}), 200)
-        else:
-            return make_response(jsonify({"description": "Wrong request"}), 404)
+@app.route("/todos/", methods=["POST"])
+def add_todo():
+    post_data = request.json
+    title = post_data["title"]
+    description = post_data["description"]
+    status = post_data["status"]
+    do_time = post_data["do_time"]
+    user_id = post_data["user_id"]
+
+    return todo_service.add_single_todo(user_id, title, description, status, do_time)
+
+
+@app.route("/todos/<task_id>", methods=["GET"])
+def get_single_task(task_id):
+    return todo_service.get_single_todo(task_id)
+
+
+
+@app.route("/todos/<task_id>", methods=["DELETE"])
+def delete_single_task(task_id):
+    if data_connection.delete_task(task_id):
+        return make_response(jsonify({"description": f"Task '{task_id}' deleted successfully"}), 200)
+    else:
+        return make_response(jsonify({"description": f"Task '{task_id}' not found"}), 404)
+
+
+@app.route("/todos/<task_id>", methods=["PUT"])
+def update_single_task(task_id):
+    post_data = request.json
+    change_attribute = post_data["attribute"]
+    change_content = post_data["content"]
+    if data_connection.change_task(task_id, change_attribute, change_content):
+        return make_response(jsonify({"description": f"Task '{task_id}' updated successfully"}), 200)
+    else:
+        return make_response(jsonify({"description": "Wrong request"}), 404)
+
 
 # return all tasks from one user
 @app.route("/users/<user_id>/todos/", methods=["GET"])
 def todos_user(user_id):
-
     if data_connection.see_all_task_one_user(user_id) is not None:
         return make_response(jsonify({"description": data_connection.see_all_task_one_user(user_id)}), 200)
     else:
-        return make_response(jsonify({"description": f"User or tasks not found"}), 404)
-
+        return make_response(jsonify({"description": "User or tasks not found"}), 404)
 
 
 if __name__ == '__main__':
