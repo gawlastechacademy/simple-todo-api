@@ -9,14 +9,12 @@ def check_and_create_data_file_users():
 
     if Path.exists(checked_directory):
         if Path.exists(checked_file):
-            print("Directory and file users exist")
             return checked_file
         else:
             with open(checked_file, "w") as file:
                 setup_data = {}
                 json.dump(setup_data, file)
                 file.close()
-                print("File was created")
                 return checked_file
 
     else:
@@ -24,7 +22,6 @@ def check_and_create_data_file_users():
         with open(checked_file, "w") as file:
             setup_data = {}
             json.dump(setup_data, file)
-            print("File and data was created")
             return checked_file
 
 
@@ -52,14 +49,12 @@ def check_and_create_data_file_tasks():
 
     if Path.exists(checked_directory):
         if Path.exists(checked_file):
-            print("Directory and file tasks exist")
             return checked_file
         else:
             with open(checked_file, "w") as file:
                 setup_data = {}
                 json.dump(setup_data, file)
                 file.close()
-                print("File was created")
                 return checked_file
 
     else:
@@ -67,7 +62,6 @@ def check_and_create_data_file_tasks():
         with open(checked_file, "w") as file:
             setup_data = {}
             json.dump(setup_data, file)
-            print("File and data was created")
             return checked_file
 
 
@@ -93,8 +87,6 @@ def check_admin(user):
     with open(json_file, "r+") as file:
         json_data = json.load(file)
         user_id = check_user(user, json_data)
-        print(f"user id {user_id}")
-        print(json_data[user_id]["admin"])
         return json_data[user_id]["admin"]
 
 
@@ -112,7 +104,6 @@ def register(user, password, admin="False"):
     with open(json_file, "r+") as file:
         json_data = json.load(file)
         if bool(check_user(user, json_data)):
-            print("User exist in data base")
             return False
         else:
             new_user_json = {str(user_id): {"id": str(user_id), "user": user, "password": password, "admin": admin}}
@@ -120,7 +111,6 @@ def register(user, password, admin="False"):
             with open(json_file, "w") as file:
                 file.seek(0)
                 json.dump(json_data, file, indent=6)
-                print("User added to database")
                 return True
 
 
@@ -157,7 +147,6 @@ def add_task(user_id, title, description, status, do_time):
                 else:
                     return False
     else:
-        print(f"Status '{status}' doesn't exist")
         return False
 
 def see_all_task_all_users():
@@ -181,7 +170,6 @@ def see_all_task_one_user(user_id):
         if bool(selected_file):
             return selected_file
         else:
-            print(f"User id {user_id} doesn't exist")
             return None
 
 
@@ -195,7 +183,6 @@ def see_one_task(task_id):
                 selected_file[key] = value
         if bool(selected_file):
             return selected_file
-        print(f"Task {task_id} doesn't exist")
         return None
 
 def change_task(task_id, change_attribute, change_content):
@@ -208,8 +195,6 @@ def change_task(task_id, change_attribute, change_content):
                 with open(data_file, "w") as file:
                     file.seek(0)
                     json.dump(json_data, file, indent=6)
-
-                    print(f"Change '{change_attribute}' to '{change_content}' in '{task_id}' task.")
                     return True
 
             if change_attribute == "description":
@@ -219,7 +204,6 @@ def change_task(task_id, change_attribute, change_content):
                     file.seek(0)
                     json.dump(json_data, file, indent=6)
 
-                    print(f"Change '{change_attribute}' to '{change_content}' in '{task_id}' task.")
                     return True
 
             if change_attribute == "status":
@@ -229,11 +213,8 @@ def change_task(task_id, change_attribute, change_content):
                     with open(data_file, "w") as file:
                         file.seek(0)
                         json.dump(json_data, file, indent=6)
-
-                        print(f"Change '{change_attribute}' to '{change_content}' in '{task_id}' task.")
                         return True
                 else:
-                    print(f"Status '{change_content}' doesn't exist")
                     return f"Status '{change_content}' doesn't exist"
 
             if change_attribute == "do_date":
@@ -242,14 +223,10 @@ def change_task(task_id, change_attribute, change_content):
                 with open(data_file, "w") as file:
                     file.seek(0)
                     json.dump(json_data, file, indent=6)
-
-                    print(f"Change '{change_attribute}' to '{change_content}' in '{task_id}' task.")
                     return f"Change '{change_attribute}' to '{change_content}' in '{task_id}' task."
             else:
-                print(f"This '{change_attribute}' doesn't exist.")
                 return False
         else:
-            print(f"Task '{task_id}' doesn't exist.")
             return False
 
 

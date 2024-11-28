@@ -9,7 +9,6 @@ def check_and_create_data_file():
 
     if Path.exists(checked_directory):
         if Path.exists(checked_file):
-            print("Directory and file exist")
             return checked_file
         else:
             connection = sql.connect(checked_file)
@@ -45,8 +44,6 @@ def check_and_create_data_file():
 
             cursor.close()
             connection.close()
-            print("File was created")
-
             return checked_file
 
     else:
@@ -78,7 +75,6 @@ def check_and_create_data_file():
 
         cursor.close()
         connection.close()
-        print("File was created")
         return checked_file
 
 
@@ -93,7 +89,6 @@ def check_admin(user):
     """
     cursor.execute(statement, (user,))
     sql_file = cursor.fetchone()
-    print(sql_file[0])
     return sql_file[0]
 
 
@@ -108,7 +103,6 @@ def user_exist(data_file, user):
     """
     cursor.execute(statement, (user,))
     sql_file = cursor.fetchall()
-    print(sql_file)
 
     return bool(sql_file)
 
@@ -149,7 +143,6 @@ def register(user, password, admin="False"):
     cursor = connection.cursor()
 
     if user_exist(data_file, user):
-        print("user exist, choose different name")
         return False
     else:
         statement = """
@@ -176,9 +169,7 @@ def login(user, password):
     sql_file = cursor.fetchall()
 
     if bool(sql_file):
-        print("You are login")
         return True
-    print("wrong user or password")
     return False
 
 
@@ -200,10 +191,8 @@ def add_task(user_id, title, description, status, do_date):
             connection.close()
             return True
         else:
-            print(f"You can't add task because user ID {user_id} doesn't exist")
             return False
     else:
-        print(f"Status '{status}' doesn't exist")
         return False
 
 
@@ -238,7 +227,6 @@ def see_all_task_one_user(user_id):
     if bool(sql_data):
         return sql_data
     else:
-        print(f"User id {user_id} doesn't exist")
         return None
 
 
@@ -252,7 +240,6 @@ def see_one_task(task_id):
     """
     cursor.execute(statement, (task_id,))
     sql_data = cursor.fetchall()
-    print(bool(sql_data))
     if bool(sql_data):
         return sql_data
     else:
@@ -269,7 +256,6 @@ def see_all_tasks_all_users():
     cursor.execute(statement)
     sql_all_tasks = cursor.fetchall()
 
-    print(sql_all_tasks)
     return sql_all_tasks
 
 
@@ -290,7 +276,6 @@ def change_task(task_id, change_attribute, change_content):
             connection.commit()
             cursor.close()
             connection.close()
-            print(f"Change '{change_attribute}' to '{change_content}' in '{task_id}' task.")
             return True
 
         elif change_attribute.lower() == "description":
@@ -303,7 +288,6 @@ def change_task(task_id, change_attribute, change_content):
             connection.commit()
             cursor.close()
             connection.close()
-            print(f"Change '{change_attribute}' to '{change_content}' in '{task_id}' task.")
             return True
 
         elif change_attribute.lower() == "status":
@@ -318,10 +302,8 @@ def change_task(task_id, change_attribute, change_content):
                 connection.commit()
                 cursor.close()
                 connection.close()
-                print(f"Change '{change_attribute}' to '{change_content.lower()}' in '{task_id}' task.")
                 return True
             else:
-                print(f"Status '{change_content}' doesn't exist")
                 return False
 
         elif change_attribute.lower() == "do_date":
@@ -334,14 +316,11 @@ def change_task(task_id, change_attribute, change_content):
             connection.commit()
             cursor.close()
             connection.close()
-            print(f"Change '{change_attribute}' to '{change_content}' in '{task_id}' task.")
             return True
 
         else:
-            print(f"This '{change_attribute}' doesn't exist.")
             return False
     else:
-        print(f"Task {task_id} doesn't exist")
         return False
 
 
@@ -369,7 +348,6 @@ def delete_task(task_id):
         connection.close()
         return True
     else:
-        print(f"task {task_id} doesn't exist in database")
         return False
 
 
