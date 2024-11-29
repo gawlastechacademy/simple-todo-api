@@ -50,7 +50,6 @@ def add_todo():
     status = post_data["status"]
     do_time = post_data["do_time"]
     user_id = post_data["user_id"]
-
     return todo_service.add_single_todo(user_id, title, description, status, do_time)
 
 
@@ -59,13 +58,9 @@ def get_single_task(task_id):
     return todo_service.get_single_todo(task_id)
 
 
-
 @app.route("/todos/<task_id>", methods=["DELETE"])
 def delete_single_task(task_id):
-    if data_connection.delete_task(task_id):
-        return make_response(jsonify({"description": f"Task '{task_id}' deleted successfully"}), 200)
-    else:
-        return make_response(jsonify({"description": f"Task '{task_id}' not found"}), 404)
+    return todo_service.delete_single_todo(task_id)
 
 
 @app.route("/todos/<task_id>", methods=["PUT"])
@@ -73,19 +68,13 @@ def update_single_task(task_id):
     post_data = request.json
     change_attribute = post_data["attribute"]
     change_content = post_data["content"]
-    if data_connection.change_task(task_id, change_attribute, change_content):
-        return make_response(jsonify({"description": f"Task '{task_id}' updated successfully"}), 200)
-    else:
-        return make_response(jsonify({"description": "Wrong request"}), 404)
+    return todo_service.update_single_todo(task_id, change_attribute, change_content)
 
 
 # return all tasks from one user
 @app.route("/users/<user_id>/todos/", methods=["GET"])
 def todos_user(user_id):
-    if data_connection.see_all_task_one_user(user_id) is not None:
-        return make_response(jsonify({"description": data_connection.see_all_task_one_user(user_id)}), 200)
-    else:
-        return make_response(jsonify({"description": "User or tasks not found"}), 404)
+    return todo_service.get_user_todos(user_id)
 
 
 if __name__ == '__main__':
