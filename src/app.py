@@ -1,9 +1,10 @@
 import os
-from flask import Flask, request, jsonify, make_response
-import sqllite_connection as data_connection
+from flask import Flask, request
+import db_init
 from dotenv import load_dotenv
 
 import src.services.todo_service as todo_service
+import src.services.user_service as user_service
 
 # load .env file to environment
 load_dotenv()
@@ -18,10 +19,7 @@ def register():
     user_name = post_data["user"]
     user_password = post_data["password"]
     user_admin = post_data["admin"]
-    if data_connection.register(user_name, user_password, user_admin):
-        return make_response(jsonify({"description": f"User '{user_name}' successfully registered"}), 201)
-    else:
-        return make_response(jsonify({"description": f"User '{user_name}' already exists in database"}), 409)
+    return user_service.create_user(user_name, user_password, user_admin)
 
 
 @app.route("/login/", methods=["POST"])
@@ -29,12 +27,7 @@ def login():
     post_data = request.json
     user_name = post_data["user"]
     user_password = post_data["password"]
-
-    if data_connection.login(user_name, user_password):
-        return make_response(jsonify({"description": f"Login successful for user '{user_name}'"}), 200)
-
-    else:
-        return make_response(jsonify({"description": "Wrong username or password"}), 400)
+    return user_service.login(user_name, user_password)
 
 
 @app.route("/todos/", methods=["GET"])
@@ -78,4 +71,5 @@ def todos_user(user_id):
 
 
 if __name__ == '__main__':
+    db_init.check_and_create_db()
     app.run(host='0.0.0.0', port=8080)
