@@ -2,7 +2,6 @@ import os
 from flask import Flask, request
 import db_init
 from dotenv import load_dotenv
-
 import src.services.todo_service as todo_service
 import src.services.user_service as user_service
 
@@ -58,10 +57,9 @@ def delete_single_task(task_id):
 
 @app.route("/todos/<task_id>", methods=["PUT"])
 def update_single_task(task_id):
-    post_data = request.json
-    change_attribute = post_data["attribute"]
-    change_content = post_data["content"]
-    return todo_service.update_single_todo(task_id, change_attribute, change_content)
+    post_request = request.json
+
+    return todo_service.update_single_todo(post_request, task_id)
 
 
 # return all tasks from one user
