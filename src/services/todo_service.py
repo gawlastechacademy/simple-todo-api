@@ -85,7 +85,7 @@ def delete_single_todo(task_id):
     data_file = Path(Path.cwd(), "data", "data_sql.db")
     connection = sql.connect(data_file)
     cursor = connection.cursor()
-    #check if task exist
+    # check if task exist
     statement = "SELECT * FROM TASKS WHERE task_id = ?"
     cursor.execute(statement, (task_id,))
     deleted_task = cursor.fetchall()
