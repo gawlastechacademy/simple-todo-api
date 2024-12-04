@@ -76,9 +76,7 @@ def get_single_todo(task_id):
     task_matching = cursor.fetchall()
     if len(task_matching) == 0:
         return make_response(jsonify({"description": f"task '{task_id}' not found"}), 404)
-    else:
-        return make_response(
-            jsonify(tasks_response_builder(task_matching[0]), 200))
+    return make_response(jsonify(tasks_response_builder(task_matching[0]), 200))
 
 
 def delete_single_todo(task_id):
@@ -92,13 +90,12 @@ def delete_single_todo(task_id):
 
     if len(deleted_task) == 0:
         return make_response(jsonify({"description": f"Task '{task_id}' not found"}), 404)
-    else:
-        statement = "DELETE FROM TASKS WHERE task_id = ?"
-        cursor.execute(statement, (task_id,))
-        connection.commit()
-        cursor.close()
-        connection.close()
-        return make_response(jsonify({"description": f"Task '{task_id}' successfully deleted"}), 200)
+    statement = "DELETE FROM TASKS WHERE task_id = ?"
+    cursor.execute(statement, (task_id,))
+    connection.commit()
+    cursor.close()
+    connection.close()
+    return make_response(jsonify({"description": f"Task '{task_id}' successfully deleted"}), 200)
 
 
 def update_single_todo(post_request, task_id):
@@ -133,6 +130,8 @@ def update_single_todo(post_request, task_id):
 
 
 def get_user_todos(user_id):
+    if not user_id_exist(user_id):
+        return make_response(jsonify({"description": "User id doesn't exist"}), 404)
     data_file = Path(Path.cwd(), "data", "data_sql.db")
     connection = sql.connect(data_file)
     cursor = connection.cursor()
@@ -140,12 +139,4 @@ def get_user_todos(user_id):
     cursor.execute(statement, (user_id,))
     matching_tasks = cursor.fetchall()
     tasks = [tasks_response_builder(task) for task in matching_tasks]
-    if len(matching_tasks) == 0:
-        return make_response(jsonify({"description": "Wrong user id"}), 404)
     return make_response(jsonify(tasks), 200)
-
-
-if __name__ == '__main__':
-    pass
-    # test_request = {"title": "test title", "status": "done"}
-    # update_single_todo(test_request, 2)

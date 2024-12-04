@@ -38,5 +38,5 @@ def login(user, password):
     # client errors
     if len(sql_file) == 0:
         return make_response(jsonify({"description": "Wrong username or password"}), 400)
-    else:
-        return make_response(jsonify({"description": f"Login successful for user '{user}'"}), 200)
+
+    return make_response(jsonify({"description": f"Login successful for user '{user}'"}), 200)
