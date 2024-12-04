@@ -1,42 +1,30 @@
-import sqlite3 as sql
-from pathlib import Path
-from flask import jsonify, make_response
+from flask import jsonify
+from src.database import db
+from src.models.user import User
 
 
-def user_exist(data_file, user):
-    connection = sql.connect(data_file)
-    cursor = connection.cursor()
-    statement = "SELECT user_id FROM USERS WHERE user_name = ?;"
-    cursor.execute(statement, (user,))
-    matching_user = cursor.fetchall()
-    return len(matching_user) != 0
+def create_user(user_name, password, admin="False"):
+    user = User.query.filter(User.user_name == user_name).first()
+
+    if user is not None:
+        return jsonify({"description": f"user '{user_name}' already exists in database"}), 409
+
+    new_user = User(
+        user_name=user_name,
+        user_password=password,
+        admin=admin
+    )
+
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify(new_user.to_dict()), 201
 
 
-def create_user(user, password, admin="False"):
-    data_file = Path(Path.cwd(), "data", "data_sql.db")
-    connection = sql.connect(data_file)
-    cursor = connection.cursor()
-    # client errors
-    if user_exist(data_file, user):
-        return make_response(jsonify({"description": f"User '{user}' already exists in database"}), 409)
-    else:
-        statement = "INSERT INTO USERS (user_name, user_password, admin) VALUES (?,?,?);"
-        cursor.execute(statement, (user, password, admin))
-        connection.commit()
-        cursor.close()
-        connection.close()
-        return make_response(jsonify({"description": f"User '{user}' successfully registered"}), 201)
+def login(user_name, password):
+    user = User.query.filter(User.user_name == user_name and User.user_password == password).first()
 
+    if user is None:
+        return jsonify({"description": "wrong username or password"}), 400
 
-def login(user, password):
-    data_file = Path(Path.cwd(), "data", "data_sql.db")
-    connection = sql.connect(data_file)
-    cursor = connection.cursor()
-    statement = "SELECT user_id, user_name FROM USERS WHERE user_name = ? AND user_password = ?;"
-    cursor.execute(statement, (user, password))
-    sql_file = cursor.fetchall()
-    # client errors
-    if len(sql_file) == 0:
-        return make_response(jsonify({"description": "Wrong username or password"}), 400)
-
-    return make_response(jsonify({"description": f"Login successful for user '{user}'"}), 200)
+    return jsonify({"description": f"login successful for user '{user.user_name}'"}), 200
