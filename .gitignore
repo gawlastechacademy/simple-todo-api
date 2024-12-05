@@ -3,3 +3,4 @@
 build/
 Flask_API_Json.egg-info/
 .env
+instance/

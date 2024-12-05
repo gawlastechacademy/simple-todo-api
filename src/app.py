@@ -1,15 +1,14 @@
-import os
 from flask import Flask, request
-import db_init
-from dotenv import load_dotenv
 import src.services.todo_service as todo_service
 import src.services.user_service as user_service
-
-# load .env file to environment
-load_dotenv()
+from src.database import db
 
 app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY')
+app.config.from_object("config.Config")
+db.init_app(app)
+
+with app.app_context():
+    db.create_all()
 
 
 @app.route("/register/", methods=["POST"])
@@ -69,5 +68,4 @@ def todos_user(user_id):
 
 
 if __name__ == '__main__':
-    db_init.check_and_create_db()
     app.run(host='0.0.0.0', port=8080)
