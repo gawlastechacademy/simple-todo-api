@@ -1,4 +1,4 @@
-from flask import jsonify, make_response
+from flask import jsonify
 from datetime import datetime
 from src.database import db
 from src.models.task import Task, status_correct
@@ -9,7 +9,7 @@ def get_all_todo():
     tasks = Task.query.all()
     tasks_dict = [task.to_dict() for task in tasks]
 
-    return make_response(jsonify(tasks_dict), 200)
+    return jsonify(tasks_dict), 200
 
 
 def add_single_todo(user_id, title, description, status, due_date):
@@ -43,16 +43,16 @@ def get_single_todo(task_id):
     task = Task.query.get(task_id)
 
     if task is None:
-        return make_response(jsonify({"description": f"task '{task_id}' not found"}), 404)
+        return jsonify({"description": f"task '{task_id}' not found"}), 404
 
-    return make_response(jsonify(task.to_dict()), 200)
+    return jsonify(task.to_dict()), 200
 
 
 def delete_single_todo(task_id):
     task = Task.query.get(task_id)
 
     if task is None:
-        return make_response(jsonify({"description": f"task '{task_id}' not found"}), 404)
+        return jsonify({"description": f"task '{task_id}' not found"}), 404
 
     db.session.delete(task)
     db.session.commit()
