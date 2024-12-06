@@ -8,7 +8,8 @@ from src.services.user_service import get_current_user, is_admin
 
 
 def get_all_todo():
-    if not is_admin():
+    user = get_current_user()
+    if not user.is_administrator():
         return jsonify({"description": "unauthorized"}), 401
     tasks = Task.query.all()
     tasks_dict = [task.to_dict() for task in tasks]
@@ -48,7 +49,7 @@ def get_single_todo(task_id):
     if task is None:
         return jsonify({"description": f"task '{task_id}' not found"}), 404
 
-    if task.user_id != user.user_id and not is_admin():
+    if task.user_id != user.user_id and not user.is_administrator():
         return jsonify({"description": "Unauthorized"}), 401
 
     return jsonify(task.to_dict()), 200
@@ -61,7 +62,7 @@ def delete_single_todo(task_id):
     if task is None:
         return jsonify({"description": f"task '{task_id}' not found"}), 404
 
-    if task.user_id != user.user_id and not is_admin():
+    if task.user_id != user.user_id and not user.is_administrator():
         return jsonify({"description": "unauthorized"}), 401
 
     db.session.delete(task)
@@ -81,7 +82,7 @@ def update_single_todo(data, task_id):
     if "status" in data.keys() and not status_correct(data["status"]):
         return jsonify({"description": "invalid status"}), 404
 
-    if task.user_id != user.user_id and not is_admin():
+    if task.user_id != user.user_id and not user.is_administrator():
         return jsonify({"description": "unauthorized"}), 401
 
     # update task fields
@@ -105,7 +106,7 @@ def get_user_todos(user_id):
     if user is None:
         return jsonify({"description": "invalid user id"}), 409
 
-    if user.user_id != user_logged.user_id and not is_admin():
+    if user.user_id != user_logged.user_id and not user_logged.is_administrator():
         return jsonify({"description": "unauthorized"}), 401
 
     all_tasks = Task.query.filter(Task.user_id == user_id).all()

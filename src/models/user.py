@@ -13,3 +13,7 @@ class User(db.Model):
             "user_name": self.user_name,
             "is_admin": self.is_admin,
         }
+
+    def is_administrator(self):
+        print(self.is_admin)
+        return self.is_admin == 1

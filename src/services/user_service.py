@@ -39,8 +39,3 @@ def get_current_user():
 
     return user
 
-
-def is_admin():
-    current_user = get_jwt_identity()
-    user = User.query.filter(User.user_name == current_user).first()
-    return user.is_admin == 1
