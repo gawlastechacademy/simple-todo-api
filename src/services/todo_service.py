@@ -4,7 +4,7 @@ from datetime import datetime
 from src.database import db
 from src.models.task import Task, status_correct
 from src.models.user import User
-from src.services.user_service import get_current_user, is_admin
+from src.services.user_service import get_current_user
 
 
 def get_all_todo():

@@ -72,5 +72,30 @@ def todos_user(user_id):
     return todo_service.get_user_todos(user_id)
 
 
+@app.route("/users/", methods=["GET"])
+@jwt_required()
+def all_users():
+    return user_service.get_all_users()
+
+
+@app.route("/users/<user_id>", methods=["GET"])
+@jwt_required()
+def single_user(user_id):
+    return user_service.get_single_user(user_id)
+
+
+@app.route("/users/<user_id>", methods=["PUT"])
+@jwt_required()
+def change_user(user_id):
+    post_request = request.json
+    return user_service.change_single_user(post_request, user_id)
+
+
+@app.route("/users/<user_id>", methods=["DELETE"])
+@jwt_required()
+def delete_user(user_id):
+    return user_service.delete_single_user(user_id)
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
