@@ -1,9 +1,11 @@
 from flask import jsonify
+from flask_jwt_extended import create_access_token, get_jwt_identity
+
 from src.database import db
 from src.models.user import User
 
 
-def create_user(user_name, password, admin="False"):
+def create_user(user_name, password):
     user = User.query.filter(User.user_name == user_name).first()
 
     if user is not None:
@@ -12,7 +14,7 @@ def create_user(user_name, password, admin="False"):
     new_user = User(
         user_name=user_name,
         user_password=password,
-        admin=admin
+        is_admin=False
     )
 
     db.session.add(new_user)
@@ -27,4 +29,18 @@ def login(user_name, password):
     if user is None:
         return jsonify({"description": "wrong username or password"}), 400
 
-    return jsonify({"description": f"login successful for user '{user.user_name}'"}), 200
+    access_token = create_access_token(identity=user_name)
+    return jsonify(access_token=access_token), 200
+
+
+def get_current_user():
+    current_user = get_jwt_identity()
+    user = User.query.filter(User.user_name == current_user).first()
+
+    return user
+
+
+def is_admin():
+    current_user = get_jwt_identity()
+    user = User.query.filter(User.user_name == current_user).first()
+    return user.is_admin == 1

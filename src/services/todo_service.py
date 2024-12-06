@@ -1,27 +1,29 @@
 from flask import jsonify
 from datetime import datetime
+
 from src.database import db
 from src.models.task import Task, status_correct
 from src.models.user import User
+from src.services.user_service import get_current_user, is_admin
 
 
 def get_all_todo():
+    if not is_admin():
+        return jsonify({"description": "unauthorized"}), 401
     tasks = Task.query.all()
     tasks_dict = [task.to_dict() for task in tasks]
 
     return jsonify(tasks_dict), 200
 
 
-def add_single_todo(user_id, title, description, status, due_date):
+def add_single_todo(title, description, status, due_date):
     # check errors
+    user = get_current_user()
+    user_id = user.user_id
+
     if not status_correct(status):
         return jsonify({"description": "invalid status"}), 400
 
-    user = User.query.get(user_id)
-    if user is None:
-        return jsonify({"description": "invalid user id"}), 409
-
-    # create new task
     create_time = datetime.now()
 
     new_task = Task(
@@ -40,19 +42,27 @@ def add_single_todo(user_id, title, description, status, due_date):
 
 
 def get_single_todo(task_id):
+    user = get_current_user()
     task = Task.query.get(task_id)
 
     if task is None:
         return jsonify({"description": f"task '{task_id}' not found"}), 404
+
+    if task.user_id != user.user_id and not is_admin():
+        return jsonify({"description": "Unauthorized"}), 401
 
     return jsonify(task.to_dict()), 200
 
 
 def delete_single_todo(task_id):
     task = Task.query.get(task_id)
+    user = get_current_user()
 
     if task is None:
         return jsonify({"description": f"task '{task_id}' not found"}), 404
+
+    if task.user_id != user.user_id and not is_admin():
+        return jsonify({"description": "unauthorized"}), 401
 
     db.session.delete(task)
     db.session.commit()
@@ -62,6 +72,7 @@ def delete_single_todo(task_id):
 
 def update_single_todo(data, task_id):
     task = Task.query.get(task_id)
+    user = get_current_user()
 
     # check errors
     if task is None:
@@ -69,6 +80,9 @@ def update_single_todo(data, task_id):
 
     if "status" in data.keys() and not status_correct(data["status"]):
         return jsonify({"description": "invalid status"}), 404
+
+    if task.user_id != user.user_id and not is_admin():
+        return jsonify({"description": "unauthorized"}), 401
 
     # update task fields
     if "title" in data.keys():
@@ -87,8 +101,12 @@ def update_single_todo(data, task_id):
 
 def get_user_todos(user_id):
     user = User.query.get(user_id)
+    user_logged = get_current_user()
     if user is None:
         return jsonify({"description": "invalid user id"}), 409
+
+    if user.user_id != user_logged.user_id and not is_admin():
+        return jsonify({"description": "unauthorized"}), 401
 
     all_tasks = Task.query.filter(Task.user_id == user_id).all()
     all_tasks_dict = [task.to_dict() for task in all_tasks]
